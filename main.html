@@ -3,22 +3,53 @@
     <head>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.1/redux.js"></script>
         <style>
-            #numbers {
+            #main_div {
                 position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%,-50%);
-                font-size: 10vw;
+            }
+            #showCal {
+                width: 200px;
+                height: 60px;
+            }
+            #numbers {
+                font-size: 6vw;
+            }
+            .calButtons {
+                margin: 5px;
+                font-size: 3vw;
             }
         </style>
     </head>
     <body>
-        <div id="numbers"></div>
+        <div id="main_div">
+            <div id="results"></div>
+            <div id="numbers"></div>
+            <div id="calButtons"></div>
+        </div>
         <script>
             var store = Redux.createStore(reducer);
+            createResult();
             createNumbers();
+            createButton();
             function reducer(state, action) {
                 console.log("reducer is loaded");
+                if(state === undefined){
+                    return {
+                        calNum: 0,
+                        selectedShow: "",
+                        mode: "show"
+                    }
+                }
+            }
+            function createResult() {
+                var state = store.getState();
+                console.log(state);
+                var resultArea = `
+                    <input id="showCal" type="text" readonly>
+                `;
+                document.getElementById("results").innerHTML = resultArea;
             }
             function createNumbers() {
                 var numberTable = `
@@ -40,7 +71,22 @@
                         </tr>
                     </table>
                 `;
-                document.querySelector("#numbers").innerHTML = numberTable;
+                document.getElementById("numbers").innerHTML = numberTable;
+            }
+            function createButton() {
+                var calButtons = `
+                    <div>
+                        <input type="button" class="calButtons" value="+"/>
+                        <input type="button" class="calButtons" value="-"/>
+                        <input type="button" class="calButtons" value="x"/>
+                        <input type="button" class="calButtons" value="%"/>
+                    </div>
+                    <div>
+                        <input type="button" class="calButtons" value="ac"/>
+                        <input type="button" class="calButtons" value="="/>
+                    </div>
+                `;
+                document.getElementById("calButtons").innerHTML = calButtons;
             }
         </script>
     </body>
