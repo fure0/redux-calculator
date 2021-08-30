@@ -1,0 +1,22 @@
+#main_div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+#showCal {
+    width: 200px;
+    height: 60px;
+    font-size: 6vw;
+}
+#numbers {
+    font-size: 6vw;
+}
+#numbers td {
+    cursor: pointer;
+}
+.calButtons {
+    margin: 5px;
+    font-size: 3vw;
+    cursor: pointer;
+}

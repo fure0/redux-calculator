@@ -2,25 +2,7 @@
 <html>
     <head>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.1/redux.js"></script>
-        <style>
-            #main_div {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%,-50%);
-            }
-            #showCal {
-                width: 200px;
-                height: 60px;
-            }
-            #numbers {
-                font-size: 6vw;
-            }
-            .calButtons {
-                margin: 5px;
-                font-size: 3vw;
-            }
-        </style>
+        <link rel="stylesheet" href="./main.css">
     </head>
     <body>
         <div id="main_div">
@@ -30,6 +12,7 @@
         </div>
         <script>
             var store = Redux.createStore(reducer);
+            store.subscribe(createResult);
             createResult();
             createNumbers();
             createButton();
@@ -37,17 +20,44 @@
                 console.log("reducer is loaded");
                 if(state === undefined){
                     return {
-                        calNum: 0,
-                        selectedShow: "",
-                        mode: "show"
+                        total: 0,
+                        selected: "0",
+                        tpye: "show"
                     }
                 }
+                if (action.type === "calculate") {
+                    if (typeof action.selected == "number") {
+                        if (state.selected == 0) {
+                            state.selected ="";
+                        }
+                        newSelected = state.selected +""+ action.selected;
+                    } else {
+                        newSelected = state.selected;
+                    }
+                    newState = Object.assign(
+                        {}, 
+                        state, 
+                        {
+                            total: 0,
+                            selected: newSelected,
+                            tpye: "show"
+                        }
+                    );
+                }
+                return newState;
+            }
+            function calculator(selected) {
+                action = {
+                    selected: selected,
+                    type: "calculate"
+                }
+                store.dispatch(action);
             }
             function createResult() {
                 var state = store.getState();
-                console.log(state);
+
                 var resultArea = `
-                    <input id="showCal" type="text" readonly>
+                    <input id="showCal" type="text" readonly value="${state.selected}">
                 `;
                 document.getElementById("results").innerHTML = resultArea;
             }
@@ -55,20 +65,26 @@
                 var numberTable = `
                     <table>
                         <tr>
-                            <td>7<td>
-                            <td>8<td>
-                            <td>9<td>
+                            <td onclick="calculator(7)">7<td>
+                            <td onclick="calculator(8)">8<td>
+                            <td onclick="calculator(9)">9<td>
                         </tr>
                         <tr>
-                            <td>4<td>
-                            <td>5<td>
-                            <td>6<td>
+                            <td onclick="calculator(4)">4<td>
+                            <td onclick="calculator(5)">5<td>
+                            <td onclick="calculator(6)">6<td>
                         </tr>
                         <tr>
-                            <td>1<td>
-                            <td>2<td>
-                            <td>3<td>
+                            <td onclick="calculator(1)">1<td>
+                            <td onclick="calculator(2)">2<td>
+                            <td onclick="calculator(3)">3<td>
                         </tr>
+                        <tr>
+                            <td><td>
+                            <td onclick="calculator(0)">0<td>
+                            <td><td>
+                        </tr>
+                        
                     </table>
                 `;
                 document.getElementById("numbers").innerHTML = numberTable;
@@ -76,10 +92,10 @@
             function createButton() {
                 var calButtons = `
                     <div>
-                        <input type="button" class="calButtons" value="+"/>
-                        <input type="button" class="calButtons" value="-"/>
-                        <input type="button" class="calButtons" value="x"/>
-                        <input type="button" class="calButtons" value="%"/>
+                        <input type="button" class="calButtons" onclick="calculator('+')" value="+"/>
+                        <input type="button" class="calButtons" onclick="calculator('-')" value="-"/>
+                        <input type="button" class="calButtons" onclick="calculator('x')" value="x"/>
+                        <input type="button" class="calButtons" onclick="calculator('%')" value="%"/>
                     </div>
                     <div>
                         <input type="button" class="calButtons" value="ac"/>
