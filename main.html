@@ -21,35 +21,64 @@
                 if(state === undefined){
                     return {
                         total: 0,
-                        selected: "0",
-                        tpye: "show"
+                        selected: "",
+                        mode: null
                     }
                 }
-                if (action.type === "calculate") {
-                    if (typeof action.selected == "number") {
-                        if (state.selected == 0) {
-                            state.selected ="";
-                        }
-                        newSelected = state.selected +""+ action.selected;
-                    } else {
-                        newSelected = state.selected;
+                console.log(state);
+                console.log(action);
+                
+                if (action.type == "numBtn") {
+                    if (action.number == 0) {
+                        action.number = "";
                     }
-                    newState = Object.assign(
-                        {}, 
-                        state, 
-                        {
-                            total: 0,
-                            selected: newSelected,
-                            tpye: "show"
+                    newTotal = state.total;
+                    newSelected = state.selected +""+ action.number.toString();
+                } else {
+                    if (action.mode == "ac") {
+                        newTotal = 0;
+                        newSelected = "";
+                    }
+                    if (action.mode == "=") {
+                        if (state.mode == "+") {
+                            newTotal = state.total + parseInt(state.selected);
+                        } else if (state.mode == "-") {
+                            newTotal = state.total - parseInt(state.selected);
+                        } else if (state.mode == "x") {
+                            newTotal = state.total * parseInt(state.selected);
+                        } else if (state.mode == "%") {
+                            newTotal = state.total % parseInt(state.selected);
                         }
-                    );
+                        newSelected = newTotal.toString();
+                    }
                 }
+                newState = Object.assign(
+                    {}, 
+                    state, 
+                    {
+                        total: newTotal,
+                        selected: newSelected,
+                        mode: action.mode
+                    }
+                );
+                
                 return newState;
             }
             function calculator(selected) {
+                var state = store.getState();
+                if (selected == "+" || selected == "-" || selected == "x" || selected == "%" || selected == "ac" || selected == "=") {
+                    selectedType = "calBtn";
+                    number = state.selected;
+                    mode = selected;
+                } else {
+                    selectedType = "numBtn";
+                    number = selected;
+                    mode = state.mode;
+                }
                 action = {
-                    selected: selected,
-                    type: "calculate"
+                    number: number,
+                    type: selectedType,
+                    mode: mode
                 }
                 store.dispatch(action);
             }
@@ -98,8 +127,8 @@
                         <input type="button" class="calButtons" onclick="calculator('%')" value="%"/>
                     </div>
                     <div>
-                        <input type="button" class="calButtons" value="ac"/>
-                        <input type="button" class="calButtons" value="="/>
+                        <input type="button" class="calButtons" onclick="calculator('ac')" value="ac"/>
+                        <input type="button" class="calButtons" onclick="calculator('=')" value="="/>
                     </div>
                 `;
                 document.getElementById("calButtons").innerHTML = calButtons;
