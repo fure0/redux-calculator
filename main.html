@@ -17,69 +17,71 @@
             createNumbers();
             createButton();
             function reducer(state, action) {
-                console.log("reducer is loaded");
+                console.log("reducer");
                 if(state === undefined){
                     return {
                         total: 0,
                         selected: "",
-                        mode: null
+                        inputArray: []
                     }
                 }
-                console.log(state);
-                console.log(action);
-                
                 if (action.type == "numBtn") {
-                    if (action.number == 0) {
-                        action.number = "";
+                    if (action.selected == 0 && state.selected == "") {
+                        action.selected = "";
                     }
-                    newTotal = state.total;
-                    newSelected = state.selected +""+ action.number.toString();
+                    state.selected = state.selected +""+ action.selected.toString();
+                    return state;
                 } else {
-                    if (action.mode == "ac") {
-                        newTotal = 0;
-                        newSelected = "";
-                    }
-                    if (action.mode == "=") {
-                        if (state.mode == "+") {
-                            newTotal = state.total + parseInt(state.selected);
-                        } else if (state.mode == "-") {
-                            newTotal = state.total - parseInt(state.selected);
-                        } else if (state.mode == "x") {
-                            newTotal = state.total * parseInt(state.selected);
-                        } else if (state.mode == "%") {
-                            newTotal = state.total % parseInt(state.selected);
+                    if (action.selected == "ac") {
+                        state.total = 0;
+                        state.selected = "";
+                        return state;
+                    } else if (action.selected == "+") {
+                        if (state.selected) {
+                            state.inputArray.push(state.selected);
                         }
-                        newSelected = newTotal.toString();
+                        state.inputArray.push("+");
+                        state.inputArray.push("+");
+                        state.selected = "";
+                        return state;
+                    } else {
+                        console.log(state.inputArray);
+                        cal = "";
+                        var newTotal = 0;
+                        for (var value of state.inputArray) {
+                            if (value == "+") {
+                                cal = "+";
+                            }
+                            if (value == "=") {
+
+                            }
+                            if (cal == "+") {
+                                newTotal = state.total + parseInt(value);
+                            }
+                        }
+                        state.total = newTotal;
+                        console.log(state.total);
+                        state.inputArray = [];
+                        return state;
                     }
                 }
-                newState = Object.assign(
-                    {}, 
-                    state, 
-                    {
-                        total: newTotal,
-                        selected: newSelected,
-                        mode: action.mode
-                    }
-                );
-                
-                return newState;
+
             }
             function calculator(selected) {
                 var state = store.getState();
                 if (selected == "+" || selected == "-" || selected == "x" || selected == "%" || selected == "ac" || selected == "=") {
-                    selectedType = "calBtn";
-                    number = state.selected;
-                    mode = selected;
+                    action = {
+                        selected: selected,
+                        type: "calBtn"
+                    }
                 } else {
-                    selectedType = "numBtn";
-                    number = selected;
-                    mode = state.mode;
+                    action = {
+                        number: selected,
+                        type: "numBtn"
+                    }
+                    num = selected;
                 }
-                action = {
-                    number: number,
-                    type: selectedType,
-                    mode: mode
-                }
+                
                 store.dispatch(action);
             }
             function createResult() {
