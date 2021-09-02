@@ -21,48 +21,40 @@
                 if(state === undefined){
                     return {
                         total: 0,
-                        selected: "",
-                        inputArray: []
+                        number: "",
+                        type: "default"
                     }
                 }
                 if (action.type == "numBtn") {
-                    if (action.selected == 0 && state.selected == "") {
-                        action.selected = "";
+                    if (action.number == 0 && state.number == "") {
+                        action.number = "";
                     }
-                    state.selected = state.selected +""+ action.selected.toString();
-                    return state;
+                    if (state.type == "calBtn") {
+                        state.number = "";
+                    }
+                    newState = Object.assign({}, state, {
+                        number: state.number +""+ action.number.toString(),
+                        type: "numBtn"
+                    })
+                    return newState;
                 } else {
                     if (action.selected == "ac") {
-                        state.total = 0;
-                        state.selected = "";
-                        return state;
+                        newState = Object.assign({}, state, {
+                            total: 0,
+                            number: ""
+                        })
+                        return newState;
                     } else if (action.selected == "+") {
-                        if (state.selected) {
-                            state.inputArray.push(state.selected);
-                        }
-                        state.inputArray.push("+");
-                        state.inputArray.push("+");
-                        state.selected = "";
-                        return state;
+                        total = state.total + parseInt(state.number);
+                        console.log(total);
+                        newState = Object.assign({}, state, {
+                            total: total,
+                            number: total,
+                            type: action.type
+                        })
+                        return newState;
                     } else {
-                        console.log(state.inputArray);
-                        cal = "";
-                        var newTotal = 0;
-                        for (var value of state.inputArray) {
-                            if (value == "+") {
-                                cal = "+";
-                            }
-                            if (value == "=") {
-
-                            }
-                            if (cal == "+") {
-                                newTotal = state.total + parseInt(value);
-                            }
-                        }
-                        state.total = newTotal;
-                        console.log(state.total);
-                        state.inputArray = [];
-                        return state;
+                        //state.inputArray.push("=@"+state.number);
                     }
                 }
 
@@ -79,7 +71,6 @@
                         number: selected,
                         type: "numBtn"
                     }
-                    num = selected;
                 }
                 
                 store.dispatch(action);
@@ -88,7 +79,7 @@
                 var state = store.getState();
 
                 var resultArea = `
-                    <input id="showCal" type="text" readonly value="${state.selected}">
+                    <input id="showCal" type="text" readonly value="${state.number}">
                 `;
                 document.getElementById("results").innerHTML = resultArea;
             }
