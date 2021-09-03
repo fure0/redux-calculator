@@ -17,20 +17,29 @@
             createNumbers();
             createButton();
             function reducer(state, action) {
-                console.log("reducer");
+                defaultState = {
+                    total: 0,
+                    number: "",
+                    mode: null,
+                    type: null
+                };
                 if(state === undefined){
-                    return {
-                        total: 0,
-                        number: "",
-                        type: "default"
-                    }
+                    return defaultState;
                 }
                 if (action.type == "numBtn") {
                     if (action.number == 0 && state.number == "") {
                         action.number = "";
                     }
                     if (state.type == "calBtn") {
-                        state.number = "";
+                        if (state.mode == "+") {
+                            newTotal = state.total + parseInt(action.number);
+                            newState = Object.assign({}, state, {
+                                total: newTotal,
+                                number: newTotal.toString(),
+                                type: "numBtn"
+                            })
+                            return newState;
+                        }
                     }
                     newState = Object.assign({}, state, {
                         number: state.number +""+ action.number.toString(),
@@ -38,24 +47,21 @@
                     })
                     return newState;
                 } else {
-                    if (action.selected == "ac") {
+                    if (state.mode == "+") {
+                        console.log(state);
+                        console.log(action);
                         newState = Object.assign({}, state, {
-                            total: 0,
-                            number: ""
+                            number: state.number + parseInt(action.number),
+                            mode: action.selected,
+                            type: "calBtn"
                         })
                         return newState;
-                    } else if (action.selected == "+") {
-                        total = state.total + parseInt(state.number);
-                        console.log(total);
-                        newState = Object.assign({}, state, {
-                            total: total,
-                            number: total,
-                            type: action.type
-                        })
-                        return newState;
-                    } else {
-                        //state.inputArray.push("=@"+state.number);
                     }
+                    newState = Object.assign({}, state, {
+                        mode: action.selected,
+                        type: "calBtn"
+                    })
+                    return newState;
                 }
 
             }
@@ -64,6 +70,7 @@
                 if (selected == "+" || selected == "-" || selected == "x" || selected == "%" || selected == "ac" || selected == "=") {
                     action = {
                         selected: selected,
+                        number: state.number,
                         type: "calBtn"
                     }
                 } else {
@@ -131,3 +138,7 @@
 </html>
 
 
+<!--
+@1 다른 연산자 고려
+@2 1 + 2 - 1 같은 계산 구현
+-->
